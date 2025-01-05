@@ -41,7 +41,7 @@ This will create a directory `test_proj` with all files required. To run the pro
 
 Configuration file contains settings, which will be used by Vatafak. The configuration file contains settings that will be used by Vatafak to determine the properties of the window and other aspects of the application.
 
-This section explains the configuration file fields using the [Jumper](https://github.com/hedgeg0d/vatafak/examples/jumper/main.conf) project example.
+This section explains the configuration file fields using the [Jumper](https://github.com/hedgeg0d/vatafak/blob/main/examples/jumper/main.conf) project example.
 ```
 window_width 1000
 window_height 1000

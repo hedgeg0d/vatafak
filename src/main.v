@@ -165,7 +165,7 @@ fn main() {
 	mut source_file := ''
 	if args.len > 1 {
 		match args[1] {
-			'man' {eprintln('Docs were moved to https://github.com/hedgeg0d/vatafak/docs/docs.md')}
+			'man' {eprintln('Docs were moved to https://github.com/hedgeg0d/vatafak/blob/main/docs/docs.md')}
 			'help' {
 				eprintln('\nVatafak is a VM for the Brainfuck programming language, which can be used to create something interesting in it. Standart Brainfuck' +
 				'is very limited, so Vatafak extends its capabilities and adds some new fetures.\n\nTo get started you will need to read the documentation: ' +
