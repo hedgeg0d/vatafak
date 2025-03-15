@@ -13,10 +13,11 @@ Vatafak is a virtual machine (VM) for [Brainfuck](https://wikipedia.org/wiki/Bra
 ![image rendering](https://i.imgur.com/f34OKeX.jpeg) 
 ![jumper_test](https://github.com/hedgeg0d/vatafak/blob/main/assets/jumper.gif)
 ![input](https://github.com/hedgeg0d/vatafak/blob/main/assets/input.gif)
+![input](https://github.com/hedgeg0d/vatafak/blob/main/assets/pong.gif)
 
 ## Early version
 This is a very early version of the project. I plan to add more features and improvements:
- - [ ] More examples, f.i. PingPong game
+ - [x] More examples, such as Pong game
  - [ ] More draw function, such as `draw_circle`, `draw_text`
  - [ ] Functions for reading and writing files
  - [ ] Generate V-file to compile project. Even for android maybe :D

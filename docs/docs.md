@@ -109,8 +109,14 @@ Here is the table of function codes, their arguments and descriptions.
 | 2 | u16(x x) u16(y y) u16(w w) u16(h h) color| draws rectangle of specified color and size, on specified coordinates |
 | 3 |idx from to| generate random number(u8) in [from; to) diapason ans put it to cell[`idx` + `start_of-special_buffer`]. If from and to arguments are `0`, then diapason will be [0;255] |
 | 4 | (no args) | terminate app |
+| 5 | u16(x x) u16(y y) u16(r r) color | draws circle on (`x`, `y`) of radius `r`
 | 10 | from to | move 16-bit value to destination. both args are least significant bytes
 | 11 | from to | copy 16-bit value to destination. both args are least significant bytes
+| 12 | u16(n1 n1) u16(n2 n2) | compares two 16-bit values. If n1 > n2 sets `16` to 1, if equal - 2, otherwise - 0
+| 13 | u16(n1 n1) u16(n2 n2) | adds n2 16-bit value to n1 16-bit value
+| 14 | u16(n1 n1) u16(n2 n2) | substracts n2 16-bit value from n1 16-bit value
+| 15 | u16(n1 n1) u16(n2 n2) | multiplies n1 16-bit value by n2 16-bit value
+| 16 | u16(n1 n1) u16(n2 n2) | divides n1 16-bit value by n2 16-bit value
 
 ### Events
 Some events can be processed from Brainfuck, and events can have additional values placed in the out-section. Event code is put to first cell of out-section. All events trigger `on_event` function.

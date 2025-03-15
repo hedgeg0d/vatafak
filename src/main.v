@@ -4,6 +4,10 @@ import os
 import strconv
 import gg
 import gx
+import sokol.sgl
+
+#flag -D_SGL_DEFAULT_MAX_VERTICES=4194304
+#flag -D_SGL_DEFAULT_MAX_COMMANDS=65536
 
 struct GameConfig {
 mut:
@@ -17,17 +21,6 @@ mut:
 	tape_start int
 	debug      bool
 	clean_buff bool = true
-}
-
-struct BfState {
-mut:
-	mem       []u8
-	ptr       int
-	code      string
-	input     []u8
-	input_ptr int
-	last      int
-	out       string
 }
 
 struct FuncList {
@@ -47,6 +40,8 @@ mut:
 	conf GameConfig
 	code []string
 	fl   FuncList
+	//istream_idx int
+	frame		[500][500]u32
 }
 
 const special_buffer_size = 27
@@ -107,17 +102,17 @@ fn (mut app App) scan_funcs() {
 					match awaiting {
 						'on_frame' {
 							for code_line in app.code[app.fl.on_frame..n] {
-								app.fl.on_frame_code += code_line
+								app.fl.on_frame_code += separate_bf(code_line)
 							}
 						}
 						'on_event' {
 							for code_line in app.code[app.fl.on_event..n] {
-								app.fl.on_event_code += code_line
+								app.fl.on_event_code += separate_bf(code_line)
 							}
 						}
 						'init' {
 							for code_line in app.code[app.fl.init..n] {
-								app.fl.init_code += code_line
+								app.fl.init_code += separate_bf(code_line)
 							}
 						}
 						else {
@@ -174,25 +169,47 @@ fn on_event(e &gg.Event, mut app App) {
 }
 
 fn init(mut app App) {
+	//app.frame = [][]u32{cap: app.conf.m_height, len: app.conf.m_height, init: []u32{cap: app.conf.m_width, len: app.conf.m_width}}
+	//app.istream_idx = app.gg.new_streaming_image(app.conf.m_width, app.conf.m_height, 4, pixel_format: .rgba8)
+	//app.update_frame()
 	app.bf.mem = []u8{len: app.conf.tape_size, cap: app.conf.tape_size, init: 0}
-	app.bf.ptr = app.conf.m_width + app.conf.m_height
 	app.bf.ptr = app.conf.mem_start
 	app.bf.code = app.fl.init_code
 	app.run(app.conf.mem_start - 1, app.bf.mem.len)
 }
+
+/*@[direct_array_access]
+fn (mut app App) update_frame() {
+	mut rcolor := u64(app.gg.frame)
+	for y in 0 .. app.conf.m_height {
+		for x in 0 .. app.conf.m_width {
+			rcolor = rcolor * 1664525 + 1013904223
+			//app.frame[y][x] = u32(rcolor & 0x0000_0000_FFFF_FFFF) | 0x1010AFFF
+			app.frame[y][x] = u32(0 & 0x0000_0000_0000_FFFF)
+		}
+	}
+}*/
 
 fn frame(mut app App) {
 	app.gg.begin()
 	app.bf.code = app.fl.on_frame_code
 	app.bf.ptr = 0
 	app.run(-1, app.conf.mem_start)
-	mut x, mut y := 0, 0
+	mut x, mut y := int(0), int(0)
 	mw, mh := app.conf.m_width, app.conf.m_height
 	cw, ch := app.conf.win_width / mw, app.conf.win_height / mh
+	sgl.begin_quads()
 	for i in 0 .. mw * mh {
-		app.gg.draw_rect_filled(x, y, cw, ch, u8_to_color(app.bf.mem[i]))
-		if app.conf.clean_buff {
-			app.bf.mem[i] = 0
+		if app.bf.mem[i] != 0 {
+			color := u8_to_color(app.bf.mem[i])
+			sgl.c4b(color.r, color.g, color.b, color.a)
+			sgl.v2f(x * app.gg.scale, y * app.gg.scale)
+			sgl.v2f((x + cw) * app.gg.scale, y * app.gg.scale)
+			sgl.v2f((x + cw) * app.gg.scale, (y + ch) * app.gg.scale)
+			sgl.v2f(x * app.gg.scale, (y + ch) * app.gg.scale)
+			if app.conf.clean_buff {
+				app.bf.mem[i] = 0
+			}
 		}
 		x += cw
 		if (i + 1) % mw == 0 {
@@ -200,8 +217,16 @@ fn frame(mut app App) {
 			y += ch
 		}
 	}
+	sgl.end()
 	app.gg.end()
+	/*app.gg.begin()
+	mut frame_image := app.gg.get_cached_image_by_idx(app.istream_idx)
+	frame_image.update_pixel_data(unsafe { &u8(&app.frame) })
+	size := gg.window_size()
+	app.gg.draw_image(0, 0, size.width, size.height, frame_image)
+	app.gg.end()*/
 }
+
 
 fn main() {
 	args := os.args
